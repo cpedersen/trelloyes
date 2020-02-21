@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import './App.css';
 import List from './List';
+import './App.css';
 
 class App extends Component {
   static defaultProps = {
@@ -29,7 +29,6 @@ class App extends Component {
       </main>
     );
   }
-}
 }
 
 export default App;
