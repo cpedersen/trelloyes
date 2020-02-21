@@ -6,5 +6,6 @@ import App from './App';
 
 
 ReactDOM.render(
-    <App store={STORE}/>, document.getElementById('root')
-);
+    <App store={STORE} />,
+    document.getElementById('root'),
+  );
