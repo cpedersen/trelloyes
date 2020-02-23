@@ -5,8 +5,16 @@ import renderer from 'react-test-renderer';
 
 describe('List Test Suite', () => {
   it('renders without crashing', () => {
-    const div = document.createElement('section');
-    ReactDOM.render(<List />, section);
-    ReactDOM.unmountComponentAtNode(section);
+    const div = document.createElement('div');
+    ReactDOM.render(<List-cards/>, div);
+    ReactDOM.unmountComponentAtNode(div);
   });
+
+  it('renders the UI as expected', () => {
+    const tree = renderer
+      .create(<button type="button">delete</button>)
+      .toJSON();
+    expect(tree).toMatchSnapshot();  
+  });
+
 });

@@ -9,4 +9,12 @@ describe('Card Test Suite', () => {
     ReactDOM.render(<Card />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
+
+  it('renders the UI as expected', () => {
+    const tree = renderer
+      .create(<button type="button">delete</button>)
+      .toJSON();
+    expect(tree).toMatchSnapshot();  
+  });
+
 });
