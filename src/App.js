@@ -34,7 +34,16 @@ import STORE from './STORE';
 }*/
 
 
+
 //STEP 2 - use state for store instead of props
+
+//Here's a function provided in the assignment:
+function omit(obj, keyToOmit) {
+  let {[keyToOmit]: _, ...rest} = obj;
+  return rest;
+}
+
+//Here's our newly revised App component code:
 class App extends Component {
   state = {
     store: {
@@ -56,7 +65,6 @@ class App extends Component {
     console.log("newId = " + newId)
 
     //Assign this random id to a new card variable
-    //'a': { id: 'a', title: 'First card', content: 'lorem ipsum' }
     const newCard = {id: newId, title: 'Random card ' + newId, content: 'yabba dabba do!'}
 
     //Assign content of allCards to a new variable tmpCards
@@ -66,10 +74,9 @@ class App extends Component {
     tmpCards[newCard.id] = newCard
     console.log("tmpCards: " + JSON.stringify(tmpCards))
 
-
-    //1. Find idx of list that I'm given; use find method with an array - DONE
-
-    //Assign content of array of objects to tmpLists
+    //Find idx of list that we're given
+    //a. Use find method with  array 
+    //b. Assign content of array of card list objects to tmpLists
     console.log("listId = " + listId)
     let tmpLists = this.state.store.lists
     console.log("tmpLists: " + tmpLists)
@@ -85,7 +92,7 @@ class App extends Component {
     })
     console.log("listIdx (for new random card) = " + listIdx)
 
-    //2. Once idx found, do a push on the card ids array (push new card id into the array)
+    //Once idx found, do a push on the card ids array (push new card id into the array)
     let curList = tmpLists[listIdx]
     let curListIds = curList.cardIds
     curListIds.push(newCard.id)
@@ -98,7 +105,7 @@ class App extends Component {
     tmpLists.splice(listIdx, 1, curList)
     console.log("updated tmpLists " + tmpLists[listIdx].cardIds)
 
-    //3. Update state
+    //Update state
     this.setState({lists: tmpLists})
     this.setState({allCards: tmpCards})
     for (let i=0; i < this.state.store.lists.length; i++) {
@@ -110,12 +117,48 @@ class App extends Component {
     console.log("----------------------------------------")
   }
 
-  handleDeleteCard(cardId, listId){
-    console.log('handle delete card called that has id ', {cardId})
+  handleDeleteCard = (cardId) => {
+    //When deleting a card, you'll need to remove the references to that card in each 
+    //list's cardIds; you can combine a map with a filter for this to generate a new 
+    //lists array.
+    console.log('handle delete card called that has id: ', {cardId})
+
+    //Remove card from the lists *array* of objects inside store
+    //a. Use map with array to loop through each item
+    //b. Use filter inside map to remove card matching cardId from each 
+    //   item's cardIds array
+    //c. Return items using the key, value format
+    let tmpLists2 = this.state.store.lists
+      .map(list => {
+        console.log("List " + list.id)
+        console.log("Before filter:" + list.cardIds)
+        //Create a list of all cards except for the deleted card
+        list.cardIds = list.cardIds.filter(card => card !== cardId) 
+        console.log("After filter:" + list.cardIds)
+
+        //Return items using key, value format
+        return {id: list.id, header: list.header, cardIds: list.cardIds}
+      })
+    console.log("tmpLists2 = " + JSON.stringify(tmpLists2))
+
+    //Remove card from the allCards *object* inside store
+    //a. Create tmpCards2 object to store allCards objs
+    //b. Use omit function to remove card from tmpCards2
+    console.log("cardId to remove from allCards: " + cardId)
+    let tmpCards2 = this.state.store.allCards
+    console.log("tmpCards2: " + JSON.stringify(tmpCards2))
+    const newObjectWithOmittedCard = omit(tmpCards2, cardId)
+
+    //Update state using tmp values
+    this.setState({lists: tmpLists2})
+    this.setState({allCards: newObjectWithOmittedCard})
   }
 
   render() {
+    //Previous way using props:
     /*const { store } = this.props*/
+
+    //New way using state:
     console.log(this.state)
     return (
       <main className='App'>
@@ -129,9 +172,11 @@ class App extends Component {
               item={list.id}
               header={list.header}
               cards={list.cardIds}
+              cardData={this.state.store.allCards}
               onDeleteCard={this.handleDeleteCard}
               onAddRandomCard={this.handleAddRandomCard}
             />
+
           ))}
         </div>
       </main>
